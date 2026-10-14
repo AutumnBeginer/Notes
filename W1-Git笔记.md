@@ -3,6 +3,208 @@
 > **仓库路径**：`D:\Projects\Notes`
 > **图片存放**：`./assets/`（相对路径引用，推送后不丢失）
 
+## 常用命令合辑
+
+下面这份按"使用频率 + 场景"分类，你可以直接存成 `Git命令速查.md` 放在笔记仓库里。带 ⭐ 的是你现阶段（Day 3）必须熟的，其余先眼熟，用到再查。
+
+------
+
+### 一、配置（一次性，配完就不用管）
+
+```bash
+git config --global user.name "你的名字"      # ⭐ 提交身份
+git config --global user.email "你的邮箱"     # ⭐
+git config --global init.defaultBranch main   # 新建仓库默认分支叫 main
+git config --global core.autocrlf true        # Windows 换行符自动转换
+git config --list                             # ⭐ 查看当前所有配置
+git config --global --unset user.name         # 删除某项配置
+```
+
+> `--global` 对所有仓库生效；去掉它则只对当前仓库生效。
+
+------
+
+### 二、创建与初始化
+
+```bash
+git init                        # ⭐ 把当前文件夹变成 Git 仓库
+git clone 仓库URL               # ⭐ 把远程仓库完整拉到本地
+git clone 仓库URL 文件夹名      # 指定本地文件夹名
+```
+
+------
+
+### 三、日常三步（最高频，天天用）
+
+```bash
+git status                      # ⭐ 看现在什么状态（永远先跑这个）
+git add 文件名                  # ⭐ 把指定文件放进暂存区
+git add .                       # ⭐ 把当前目录所有改动放进暂存区
+git commit -m "说明"            # ⭐ 提交，-m 后面必须写清楚干了啥
+git commit -am "说明"           # 已跟踪文件的改动，add+commit 一步搞定
+git commit                      # 不带 -m，会打开编辑器写多行说明
+```
+
+**取消暂存（放错了想撤回）：**
+
+```bash
+git restore --staged 文件名     # Git 2.23+ 推荐
+git reset HEAD 文件名           # 老版本写法，效果一样
+```
+
+------
+
+### 四、查看历史与差异
+
+```bash
+git log                         # ⭐ 完整提交历史
+git log --oneline               # ⭐ 每条一行，清爽
+git log --oneline --graph       # 带分支图形，看分支走向很好用
+git log --author="名字"         # 按作者筛选
+git log --grep="关键词"         # 按提交说明搜索
+git log -3                      # 只看最近 3 条
+git diff                        # ⭐ 工作区 vs 暂存区（还没 add 的改动）
+git diff --staged               # 暂存区 vs 上次提交（准备提交的内容）
+git diff 分支A 分支B            # 两个分支的差异
+git show 提交hash               # 看某一次提交具体改了什么
+git blame 文件名                # 看每一行是谁、哪次提交写的
+```
+
+------
+
+### 五、分支（Day 3 重点）
+
+```bash
+git branch                      # ⭐ 列出所有分支，当前分支前有 *
+git branch 分支名               # ⭐ 新建分支（不切过去）
+git branch -a                   # 连远程分支一起显示
+git checkout 分支名             # ⭐ 切换分支
+git checkout -b 分支名          # ⭐ 新建并立刻切过去（最常用）
+git switch 分支名               # Git 2.23+ 专门用来切分支，语义更清晰
+git switch -c 分支名            # 新建并切换（等价 checkout -b）
+git branch -d 分支名            # ⭐ 删除已合并的分支（安全）
+git branch -D 分支名            # 强制删除（没合并也删，慎用）
+git branch -m 新名字            # 给当前分支改名
+git branch -v                   # 显示每个分支最后一次提交
+```
+
+------
+
+### 六、合并与冲突
+
+```bash
+git merge 分支名                # ⭐ 把指定分支合并进当前分支
+git merge --abort               # 合并冲突时，放弃这次合并，回到合并前
+```
+
+**遇到冲突的处理流程：**
+
+1. `git status` 看哪些文件冲突（显示 `both modified`）
+2. 打开文件，找 `<<<<<<<` / `=======` / `>>>>>>>` 标记，手动留下正确内容、删掉标记
+3. `git add 冲突文件`
+4. `git commit -m "解决冲突"`
+
+------
+
+### 七、撤销与回退（⚠️ 危险区，看清再敲）
+
+```bash
+git restore 文件名              # ⭐ 丢弃工作区改动，恢复成上次提交的样子（不可恢复！）
+git restore --source=分支名 文件名   # 从别的分支取某个文件过来
+git checkout -- 文件名          # 老写法，同上
+git commit --amend -m "新说明"  # ⭐ 修改最后一次提交（说明或内容），还没 push 时用
+git reset --soft HEAD~1         # 撤销最后一次 commit，改动留在暂存区（安全）
+git reset --mixed HEAD~1        # 撤销 commit，改动退回工作区（默认，较安全）
+git reset --hard HEAD~1         # ⚠️ 撤销 commit 且丢弃所有改动，不可恢复
+git revert 提交hash             # ⭐ 用"新提交"抵消某次提交（已 push 后推荐用这个）
+git reflog                      # ⭐ 救命命令：记录所有 HEAD 移动，误删找回靠它
+```
+
+**误删分支/误 reset 后的找回：**
+
+```bash
+git reflog                      # 找到那个 hash
+git checkout -b 恢复分支 那个hash
+```
+
+------
+
+### 八、远程仓库
+
+```bash
+git remote -v                   # ⭐ 查看已绑定的远程
+git remote add origin URL       # ⭐ 绑定远程仓库
+git remote remove origin        # 解绑
+git remote set-url origin 新URL # 改地址
+git push                        # ⭐ 推送（已用 -u 绑定过就能这么简写）
+git push -u origin 分支名       # ⭐ 首次推送并绑定
+git push origin --delete 分支名 # 删除远程分支
+git pull                        # ⭐ 拉取并合并远程更新
+git pull --rebase               # 拉取但用 rebase 方式，历史更干净
+git fetch                       # 只下载不合并，先看再决定（更安全）
+git push --force-with-lease     # ⚠️ 覆盖远程（比 --force 安全，仍要谨慎）
+```
+
+------
+
+### 九、暂存现场（Stash）
+
+临时要切分支，但手上的改动还不想提交：
+
+```bash
+git stash                       # ⭐ 把当前改动临时收起来，工作区变干净
+git stash list                  # 查看收了几份
+git stash pop                   # ⭐ 取出最近一份并删除记录
+git stash apply                 # 取出但保留记录
+git stash drop                  # 删除某份
+```
+
+------
+
+### 十、其他常用
+
+```bash
+git tag v1.0                    # 打标签（版本发布用）
+git tag -a v1.0 -m "说明"       # 带说明的标签
+git push origin --tags          # 把标签推上去
+git clean -n                    # 预览会删掉哪些未跟踪文件（-n 只看不删）
+git clean -fd                   # ⚠️ 真的删除未跟踪文件和文件夹
+git rm 文件名                   # 从 Git 里删除文件（同时删本地）
+git rm --cached 文件名          # 只让 Git 不再跟踪，本地文件保留（.gitignore 用得上）
+git mv 旧名 新名                # 重命名并记录
+git cherry-pick 提交hash        # 把某一次提交单独摘到当前分支
+git rebase 分支名               # 变基，让历史成一条直线（进阶，练熟 merge 再学）
+```
+
+------
+
+### 给你的「必背 12 条」
+
+现阶段真正天天用的就这些，先把它练成肌肉记忆：
+
+```bash
+git status
+git add .
+git commit -m "说明"
+git log --oneline
+git diff
+git branch
+git checkout -b 分支名
+git checkout main
+git merge 分支名
+git push
+git pull
+git restore --staged 文件名
+```
+
+------
+
+### 三条安全守则（新手最容易出事的地方）
+
+1. **切分支前先 git status**，有未提交改动先 commit 或 `git stash`，否则改动会跟着你跑到别的分支。
+2. **--hard / -D / clean -fd / push --force 这四个，敲之前先想三秒**，它们删掉的东西 Git 不一定能帮你找回。
+3. **已经 push 到远程的提交，别用 reset 改**，要用 `revert`（生成一次新提交来抵消），否则别人拉取会乱。
+
 ------
 
 ## Day 1 · Git 安装与首次 commit
@@ -593,14 +795,136 @@ SSH key 在本地生成，分为私钥和公钥：
 >
 > ### 明日学习节奏建议 
 >
-> 
->
 > | 时间段           | 内容                             | 时长  |
-> | ---------------- | -------------------------------- | ----- |
+>| ---------------- | -------------------------------- | ----- |
 > | 注释驱动补全实验 | 写注释 vs 不写注释，对比补全质量 | 15min |
 > | 概念问答 × 3     | 问 3 个小问题，记下“没想到的点”  | 20min |
 > | 让 AI 考你       | 出一道选择题，作答并让它批改     | 15min |
 > | commit + push    | 整理笔记，推送到 GitHub          | 10min |
->
+> 
 > **总用时约 1 小时**，比 Day 2 轻松不少。明天加油！🚀
+------
 
+## Day 3 · 分支与合并
+
+### 1. 为什么需要分支
+
+想象这样一个场景：
+
+一个图书馆管理系统，已经实现了用户注册登录、图书借阅登记等功能。此时你要新增一个"归还截止时间"功能，它分为三个模块：截止时间设置界面、超时判断逻辑、超时提醒。如果你刚写完"截止时间界面"就直接在 `main` 分支上 `commit` + `push`，那么用户点进这个界面却发现后端逻辑还没接上，功能并不完整——`main` 分支上的系统因此处于"不稳定、甚至不可用"的状态。这在真实开发中是无法接受的。
+
+我们要求 **`main` 分支上的代码始终是稳定、可用的**，于是就有了分支（branch）：
+
+先基于当前 `main` 创建一个独立分支，专门开发这个新功能，所有相关 commit 都提交到新分支上，开发过程完全不影响主分支。等功能测试稳定后，再把新分支**合并**回 `main`。
+
+> **一句话**：分支就是"从主线复制出一条平行轨道，在支线上的折腾都不影响主线，满意了再并轨回去"。
+
+------
+
+### 2. 创建分支
+
+```bash
+git branch 分支名          # 新建分支（不切换过去）
+git branch                 # 不带分支名，列出所有分支，当前分支前有 *
+git switch 分支名          # 切换到指定分支
+git switch -c 分支名       # 新建并立刻切过去（c = create，最常用）
+```
+
+如下图所示，创建并切换后用 `git branch` 查看，带 `*` 的就是当前所在分支：
+
+![](./assets/OGPKz9mj2C.png)
+
+更方便的写法是 `git switch -c 分支名`：一步完成"创建分支 + 切换过去"。
+
+------
+
+### 3. 分支的本质：一个会移动的标签（指针）
+
+刚切到新分支时，仓库内容看起来没有任何变化——因为新分支此刻和 `main` 指向**同一个 commit**。要真正理解分支，记住它的工作方式：
+
+把项目的开发过程按功能切成小块，用箭头从左到右连起来，表示各功能的实现顺序：
+
+![](./assets/msedge_bhEfaGPBce.png)
+
+- `main` 标签和新分支标签**一开始都指向同一个 commit**（最后一个已完成的功能）。
+- **你在哪个分支上执行 `commit`，哪个分支的标签就自动向前移动、指向这条新 commit**；其他分支的标签原地不动。
+- 于是新功能只被新分支的标签跟踪，`main` 仍停在原来的位置——这就是"开发新功能不影响主分支"的底层原因。
+
+![](./assets/msedge_wjFXD6MPs1.png)
+
+> **纠正一个常见误解**：并不是"切到哪个分支，该分支标签就指向最新 commit"。切换分支只是移动 `HEAD`（你当前的位置标记），**不会自动前进任何分支的标签**。真正让某个分支标签前进的，只有"在该分支上做一次 `commit`"这个动作。
+
+**对应到实际操作**：在新分支上 commit 后，用 `git log --oneline` 把历史压缩成一行查看——
+
+![](./assets/vkhbiq9ZDr.png)
+
+可以看到 `main` 还停在 Day 2 那条 commit 上，而新的 commit 在 `BranchTest` 分支这一侧。
+
+------
+
+### 4. 合并分支
+
+功能开发完毕、测试稳定，就可以把新分支合并回 `main` 正式上线。**合并要在"目标分支"上发起**——也就是先切回 `main`，再把分支并进来：
+
+```bash
+git switch main            # 1. 先切回主分支（合并的目标）
+git merge BranchTest       # 2. 把 BranchTest 合并进当前所在的 main
+```
+
+![](./assets/Code_AUgmoVJbbA.png)
+
+合并后，`main` 标签移动到与分支相同的 commit 上，新功能正式进入主线。此时分支已完成使命，可以删除：
+
+```bash
+git branch -d BranchTest   # 删除已合并的分支（-d 安全，未合并会拒绝）
+git branch -D BranchTest   # 强制删除（连未合并的也删，慎用）
+```
+
+![](./assets/JMZD6WodYY.png)
+
+删除后，`git branch` 里就只剩 `main` 一条主线了。
+
+------
+
+### 5. 合并冲突
+
+上面的合并之所以顺利，是因为 `main` 在分支开发期间**没有动过同一处代码**，Git 只需把标签往前一移即可（这种情况叫 **fast-forward 快进合并**）。
+
+但当下述情况发生，Git 无法判断该保留谁，就会产生**冲突（conflict）**：
+
+- 同一段代码，`main` 和新分支**各自做了不同的修改**，合并时两份改动撞在了一起。
+- 典型场景：`main` 上在"开始"按钮右边加了一个"结束"按钮，而新分支在同一位置加了"暂停"按钮——同一个地方要放两个不同内容，Git 无法替你决定，必须人工裁决。
+
+> 冲突不是"出错"，而是 Git 诚实地告诉你"这里有两份改动，请你来定"。现阶段先理解它何时发生即可，等真正遇到再逐项练习手动解决：打开冲突文件找到 `<<<<<<<` / `=======` / `>>>>>>>` 标记，留下正确内容删掉标记，再 `git add` + `git commit`。
+
+------
+
+### 6. Day 3 · 三个关键问题总结
+
+#### 1. 分支到底是什么？切换分支时，硬盘上的文件会发生什么？
+
+**一句话**：分支只是一个指向某条 commit 的可移动标签；切换分支不会改内容，而是把"工作区那一份文件"替换成目标分支所指向的状态。
+
+- 磁盘上同一份文件**永远只有一个**，不存在"main 版"和"分支版"两个文件。
+- 你在 `feature` 分支写了新笔记并 commit，切回 `main` 时，`main` 没有这条记录，Git 就把该文件从工作区**拿走**（看起来"消失"，其实安全躺在 `feature` 分支和 `.git` 里）；再切回 `feature`，它又完整出现。
+- 因此养成习惯：**改哪条线的笔记，先 `git status` 确认自己在哪个分支。**
+
+#### 2. 合并时为什么必须先切回 main？合并的本质是什么？
+
+**一句话**：`git merge` 是把"指定分支"并进"你当前所在的分支"，所以想并进 `main`，就必须先站在 `main` 上。
+
+- `git switch main` → `git merge BranchTest`：方向是"把 BranchTest 拉进 main"，而不是反过来。
+- 若在 BranchTest 上执行 `git merge main`，就变成"把 main 拉进 BranchTest"，主线依旧没更新。
+- 当 `main` 在分叉后没改动，合并只是把 `main` 标签前移（fast-forward）；当两边都改过，则生成一条"合并 commit"把两条线缝合在一起。
+
+#### 3. 什么时候会出现冲突？Git 为什么不能自动解决？
+
+**一句话**：当两条线修改了**同一处内容**，Git 无法判断保留谁的版本，只能交给人来裁决。
+
+- 各改各的文件、或同一文件的不同区域 → Git 能自动合并，无冲突。
+- 同一文件的同一行/同一位置被两边改成不同结果 → 冲突，需手动处理标记块后 `add` + `commit`。
+- 这正是分支并行开发的代价与收益：Git 把"合并的决定权"交给你，换来了多人、多线并行开发的可能性。
+
+------
+
+> **Day 3 完成标志**：能在本地完整跑通"建分支 → 切过去改文件 → commit → 切回 `main` → merge → 删分支"整条流程，并说得清"切换分支时文件为何会暂时消失""合并为何要先切回目标分支"。把这份笔记 `add` → `commit` → `push`，Day 3 通关。
