@@ -893,7 +893,7 @@ git branch -D BranchTest   # 强制删除（连未合并的也删，慎用）
 
 举个实际场景：修改笔记并保存后跑 `git status`：
 
-![](.\assets\mqzz5Jpr72.png)
+![](./assets/mqzz5Jpr72.png)
 
 依次解读：
 
@@ -1075,9 +1075,9 @@ def5678 HEAD@{1}: commit: 第三次提交
 5. **结论**：为了安全，Git 拒绝自动执行，把决定权交给你——这就是 `revert` 冲突。
    
 
-冲突现场截图：![](.\assets\HIJNgaE3C0.png)
+冲突现场截图：![](./assets/HIJNgaE3C0.png)
 
-![](.\assets\GgY5CyWST1.png)
+![](./assets/GgY5CyWST1.png)
 
 #### 二、拆解冲突标记（看懂"战场"）
 
@@ -1148,7 +1148,7 @@ def5678 HEAD@{1}: commit: 第三次提交
 
 查看 log 确认：
 
-![](.\assets\Code_FoLXNDu6pI.png)
+![](./assets/Code_FoLXNDu6pI.png)
 
 最新的提交记录是 `Revert "回滚测试提交2"`，说明 Git 已经成功生成了回滚提交。
 
