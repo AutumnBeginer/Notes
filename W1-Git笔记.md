@@ -1039,7 +1039,7 @@ git branch -D BranchTest   # 强制删除（连未合并的也删，慎用）
 
    C2 从当前分支历史里消失了。
 
-   ### 	`reset` 有三种强度
+   ### `reset` 有三种强度
 
    ```
    git reset --soft HEAD~1    # 撤销 commit，修改保留在暂存区
@@ -1047,7 +1047,7 @@ git branch -D BranchTest   # 强制删除（连未合并的也删，慎用）
    git reset --hard HEAD~1    # 彻底回退，连工作区修改也丢弃
    ```
 
-   ### 	怎么选
+   ### 怎么选
 
    - **还没 push 到远程**：可以用 `git reset`，尤其是 `--soft` 或 `--mixed`，比较灵活。
    - **已经 push 到远程 / 别人可能已经拉取**：用 `git revert`，不要随便 `reset --hard`，否则协作者拉取时容易冲突。
@@ -1064,6 +1064,7 @@ git branch -D BranchTest   # 强制删除（连未合并的也删，慎用）
    git reset --hard <哈希>
    ```
 
+<<<<<<< HEAD
    恢复。
 
 ------
@@ -1074,3 +1075,6 @@ git branch -D BranchTest   # 强制删除（连未合并的也删，慎用）
 
 787777
 
+=======
+   恢复。
+>>>>>>> parent of aa007bc (回滚测试提交2)
